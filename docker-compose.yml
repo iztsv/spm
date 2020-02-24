@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  api:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./apps/api
+    env_file:
+      - ./apps/api/.env
+    volumes:
+      - ./apps/api:/app
+      - /app/node_modules
+  frontend:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./apps/frontend
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+  nginx:
+    restart: always
+    depends_on:
+      - frontend
+      - api
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - 8080:80
